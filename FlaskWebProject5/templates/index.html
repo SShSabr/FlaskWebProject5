@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Weather App</title>
+</head>
+<body>
+    <h1>Weather App</h1>
+    <form action="" method="post">
+        {{ form.city.label }} {{ form.city(size=20) }}
+        {{ form.submit }} {{form.csrt_token}}
+    </form>
+    <script>
+      const inputField = document.getElementById("city");
+      inputField.addEventListener("input", async () => {
+        const cityName = inputField.value;
+        const response = await fetch("/autocomplete?city=" + cityName);
+        const cities = await response.json();
+        const suggestions = cities.map(city => `<li>${city}</li>`).join("");
+        document.getElementById("suggestions").innerHTML = suggestions;
+      });
+    </script>
+    <ul id="suggestions"></ul>
+</body>
+</html>
