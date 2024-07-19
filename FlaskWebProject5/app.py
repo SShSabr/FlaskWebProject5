@@ -1,9 +1,15 @@
 
+
+from urllib import response
 from flask import Flask, request, jsonify, render_template
 from flask_sqlalchemy import SQLAlchemy
 from flask_wtf import FlaskForm
+from sqlalchemy import null
 from wtforms import StringField, SubmitField
 from wtforms.validators import DataRequired
+from geopy.geocoders import Nominatim 
+from datetime import datetime
+import json
 import requests
 
 app = Flask(__name__)
@@ -44,7 +50,9 @@ def index():
         db.session.add(search_history)
         db.session.commit()
         weather_data = get_weather_data(city_name)
-        return render_template("weather.html", city=city_name, weather_data=weather_data)
+        if weather_data!= null:
+            now = datetime.now()
+            return render_template("weather.html", city=city_name, temperature=weather_data['hourly']['temperature_2m'][now.hour], current_time=weather_data['hourly']['time'][now.hour] )
     return render_template("index.html", form=form)
 
 @app.route("/autocomplete", methods=["GET"])
@@ -64,21 +72,24 @@ def get_user_id():
     return 1
 
 def get_weather_data(city_name):
+    
     api_url = "https://api.open-meteo.com/v1/forecast"
-   # params = {"current_weather": True, "q": city_name}
+    gn = Nominatim(user_agent="tutorial")
+    location = gn.geocode(city_name)
+    if location == None:
+        return null
     params = {
-	"latitude": 52.52,
-	"longitude": 13.41,
+	"latitude": location.latitude,
+	"longitude": location.longitude,
 	"hourly": "temperature_2m"
     } 
     response = requests.get(api_url, params=params)
-    
-    print("-------------------")
-    print(response.json())
-    print("------------------+")
-
     data = response.json()
-    return data["current_weather"]
+        
+    #now = datetime.now()
+    #print(data['hourly']['time'][now.hour], data['hourly']['temperature_2m'][now.hour])
+ 
+    return data
 
 if __name__ == "__main__":
     with app.app_context():

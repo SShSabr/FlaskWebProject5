@@ -17,6 +17,7 @@
     <Name>FlaskWebProject5</Name>
     <RootNamespace>FlaskWebProject5</RootNamespace>
     <InterpreterId>MSBuild|env|$(MSBuildProjectFullPath)</InterpreterId>
+    <TestFramework>Pytest</TestFramework>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
     <DebugSymbols>true</DebugSymbols>
@@ -36,6 +37,7 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
+    <Content Include="libman.json" />
     <Content Include="requirements.txt" />
     <Content Include="templates\index.html" />
     <Content Include="templates\weather.html" />
